@@ -82,5 +82,27 @@ if [ "$#" -eq 3 ]; then
 	exit
 fi
 
-#print intro
+#4 args
+
+
+#5 args
+if [ "$#" -eq 5 ]; then
+	echo "Arg 1: '$1'"
+	echo "Arg 2: '$2'"
+	echo "Arg 3: '$3'"
+	echo "Arg 4: '$4'"
+	echo "Arg 5: '$5'"
+	## pushfile -a -m "message" -m "another message"
+	if [[ "$1" =~(-a|--all) &&  "$2" =~(-m|--message) ]]; then
+		if [[ "$4" =~ (-m|--message)  ]]; then
+			push_all "$3" "$5"
+		else
+			echo "ERROR: invalid message option '$4'"
+			show_usage_info
+		fi
+		exit
+	fi
+	
+	exit
+fi
 
