@@ -42,6 +42,22 @@ push_all(){
 }
 
 
+#push single fils
+#take 3 arguments: filename message 1 and message 2
+#E.g. push_all "file.txt"  "welcome" "created welcome message"
+push_file(){
+	echo "ARGS : $#"
+	echo "Pushing all with message '$1'"
+	git add "$1"
+	if [ "$#" -eq 3 ]; then
+		git commit -m "$2" -m "$3"
+	else
+		git commit -m "$2"
+	fi
+	git push
+}
+
+
 echo "Number of arguments " $#
 
 #CHECK ARGUMENTS
@@ -83,8 +99,42 @@ if [ "$#" -eq 3 ]; then
 fi
 
 #4 args
-
-
+if [ "$#" -eq 4 ]; then
+	echo "Arg 1: '$1'"
+	echo "Arg 2: '$2'"
+	echo "Arg 3: '$3'"
+	echo "Arg 4: '$4'"
+	#pushfile -am "message" -m "message details"
+	if [[ "$1" =~ -(am|ma)  ]]; then
+		if [[ "$3" =~ (-m|--message)  ]]; then
+			push_all "$2" "$4"
+		else
+			echo "ERROR: invalid message option '$3'"
+			show_usage_info
+		fi
+		exit
+	fi
+	#pushfile -f filename.ext -m "message"
+	if [[ "$1" =~ (-f|--file) ]]; then
+		if [ -f "$2" ]; then
+			if [[ "$3" =~ (-m|--message)  ]]; then
+				push_file "$2" "$4"
+			else
+				echo "ERROR: invalid message option '$3'"
+				show_usage_info
+			fi
+			exit
+		else
+			echo "ERROR: File '$2' does not exist in this directory."
+			echo "Please provide a valid file name."
+			exit
+		fi
+	fi
+	#first arg is not -am, -f or --f
+	echo "ERROR: invalid option '$1'"
+	show_usage_info
+	exit
+fi
 #5 args
 if [ "$#" -eq 5 ]; then
 	echo "Arg 1: '$1'"
@@ -105,4 +155,31 @@ if [ "$#" -eq 5 ]; then
 	
 	exit
 fi
+#6 args
+if [ "$#" -eq 6 ]; then
+	echo "Arg 1: '$1'"
+	echo "Arg 2: '$2'"
+	echo "Arg 3: '$3'"
+	echo "Arg 4: '$4'"
+	echo "Arg 5: '$5'"
+	echo "Arg 6: '$6'"
 
+	#pushfile -f filename.ext -m "message head" -m "message body"
+	if [[ "$1" =~ (-f|--file) ]]; then
+		if [ -f "$2" ]; then
+			if [[ "$3" =~ (-m|--message) && "$5" =~ (-m|--message) ]]; then
+				push_file "$2" "$4" "$6"
+			else
+				echo "ERROR: invalid message option '$3' or '$5'"
+				show_usage_info
+			fi
+			exit
+		else
+			echo "ERROR: File '$2' does not exist in this directory."
+			echo "Please provide a valid file name."
+			exit
+		fi
+	fi
+
+	exit
+fi
